@@ -5,7 +5,7 @@ React 官方的新手教程，通过实现一个简单的[井字棋游戏](https
 ### JSX
 React 中使用了一种特殊的语法（叫做 JSX）来构建视图层，例如下面 `render` 方法中 `return` 的代码片段。build 时这些 JSX 语法会被转化成 `React.createElement`。
 
-```
+```js
 class Demo extends React.Component {
     render() {
         return (
@@ -18,7 +18,7 @@ class Demo extends React.Component {
 ```
 
 JSX 语法中可以用 `{}` 包裹 JS 代码。
-```
+```js
 class Demo extends React.Component {
     render() {
         const demo = <h1>Demo</h1>;
@@ -32,3 +32,49 @@ class Demo extends React.Component {
     }
 }
 ```
+
+### 组件间的信息存储以及传递
+#### 父组件传递信息给子组件
+这里总共用到三种组件 `Square`，`Board`，`Game`，关系如图所示![](./makedown_images/components.png)
+
+父组件通过 `props` 向子组件传递信息，例如下面代码中父组件 `Board` 将 `value` 传递给了子组件 `Square`，传递的信息子组件需要从 `this.props` 中获取。
+```js
+class Square extends React.Component {
+    render() {
+        return (
+            <div>{this.props.value}</div>
+        );
+    }
+}
+
+class Board extends React.Component {
+    render() {
+        return (
+            <div>
+                <Square value={1} />
+                <Square value={2} />
+            </div>
+        );
+    }
+}
+```
+
+#### 组件的私有信息
+除了可以通过 `props` 从外界接受信息，组件内部也可以用 `state` 存储私有信息。例如下面的代码，为组件增加一个构造函数 `constructor` 来初始化私有信息，需要注意的是第一步永远是 `super(props);`。
+```js
+class Demo extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: "previous",
+        };
+    }
+}
+```
+此外修改私有信息需要调用 `this.setState`，这个方法除了修改私有信息，还会让 React 重新渲染组件。比如想要将上面代码中的 `value` 改为 "current"，这么做就行 `this.setState({value: "current"})`。
+
+#### 子组件互相传递消息
+子组件如果想使用共享的数据或传递消息，那么最好是将数据放在父组件中，由父组件进行接收和传递。
+
+#### 子组件向父组件传递信息
+父组件通过 `props` 给子组件一个函数，子组件通过该函数修改父组件中的数据。
