@@ -78,3 +78,19 @@ class Demo extends React.Component {
 
 #### 子组件向父组件传递信息
 父组件通过 `props` 给子组件一个函数，子组件通过该函数修改父组件中的数据。
+
+### 使用 immutable 对象
+当调用 `setState` 时，React 会重新渲染组件，如果传入的对象是 immutable，那么只要引用的对象与前一个不同，就说明改变了。而如果传入的对象是 mutable，那么需要从整个对象树中找出先前的复制品，再进行比较。
+下面代码假设了组件的 `state` 中有一个数组 `array` 和一个对象 `player`，分别使用 immutable 的方式修改 `state`。
+```js
+const copied_array = this.state.array.slice();
+copied_array[0] = 1;
+this.setState({array: copied_array});
+
+const copied_player = Object.assign({}, this.state.player);
+copied_player.score = 2;
+this.setState({player: copied_player});
+```
+
+### 函数式组件
+其实就是把类中的 `render` 函数变成组件，参数就是 `props`。不过我懒得用函数式组件了，感觉没啥必要吧，还得多记东西。
