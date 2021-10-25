@@ -1,6 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
 
 function Square(props) {
     return (
@@ -18,11 +18,18 @@ class Board extends React.Component {
         super(props);
         this.state = {
             squares: Array(9).fill(null),
+            xIsNext: true,
         };
     }
 
     render() {
-        const status = 'Next player: X';
+        const winner = calculateWinner(this.state.squares)
+        let status;
+        if (winner) {
+            status = 'Winner: ' + winner;
+        } else {
+            status = "Next player: " + (this.state.xIsNext ? 'X' : 'O');
+        }
 
         return (
             <div>
@@ -48,7 +55,7 @@ class Board extends React.Component {
 
     renderSquare(i) {
         return (
-            <Square 
+            <Square
                 value={this.state.squares[i]}
                 onClick={() => this.handleClick(i)}
             />
@@ -57,8 +64,16 @@ class Board extends React.Component {
 
     handleClick(i) {
         const squares = this.state.squares.slice();
-        squares[i] = 'X';
-        this.setState({squares: squares});
+        // 方块已有标记或者游戏已有胜者时，禁止点击
+        if (squares[i] || calculateWinner(squares)) {
+            return;
+        }
+
+        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        this.setState({
+            squares: squares,
+            xIsNext: !this.state.xIsNext,
+        });
     }
 }
 
@@ -76,6 +91,33 @@ class Game extends React.Component {
             </div>
         );
     }
+}
+
+function calculateWinner(squares) {
+    /**
+     * 如果有胜者返回 'X' 或者 'O'，还没分出胜负返回 null。
+     */
+    // 三横三竖两对角线，八种胜利方式
+    const lines = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+    ];
+    // 寻找 `squares` 是否满足其中一种胜利方式
+    for (let i = 0; i < lines.length; i++) {
+        const [a, b, c] = lines[i];
+        if (squares[a]
+            && squares[a] === squares[b]
+            && squares[a] === squares[c]) {
+            return squares[a];
+        }
+    }
+    return null;
 }
 
 // ========================================
