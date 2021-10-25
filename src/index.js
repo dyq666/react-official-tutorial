@@ -55,6 +55,7 @@ class Game extends React.Component {
                 squares: Array(9).fill(null),
             }],
             xIsNext: true,
+            stepNumber: 0,
         };
     }
 
@@ -70,6 +71,17 @@ class Game extends React.Component {
             status = "Next player: " + (this.state.xIsNext ? 'X' : 'O');
         }
 
+        // `this.state.history` 不会进行排序，只会在末尾插入，
+        // 只会在末尾删除，idx 对现有元素来说是不变的，可以作为 key。
+        const moves = history.map((_, idx) => {
+            const desc = idx ? ("Go to move #" + idx) : "Go to game start";
+            return (
+                <li key={idx}>
+                    <button onClick={() => this.jumpTo(idx)}>{desc}</button>
+                </li>
+            );
+        });
+
         return (
             <div className="game">
                 <div className="game-board">
@@ -80,7 +92,7 @@ class Game extends React.Component {
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
-                    <ol>{/* TODO */}</ol>
+                    <ol>{moves}</ol>
                 </div>
             </div>
         );
