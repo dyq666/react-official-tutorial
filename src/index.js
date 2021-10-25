@@ -61,8 +61,8 @@ class Game extends React.Component {
 
     render() {
         const history = this.state.history;
-        const current = history[history.length - 1].squares;
-        const winner = calculateWinner(current)
+        const current = history[this.state.stepNumber];
+        const winner = calculateWinner(current.squares);
 
         let status;
         if (winner) {
@@ -77,7 +77,9 @@ class Game extends React.Component {
             const desc = idx ? ("Go to move #" + idx) : "Go to game start";
             return (
                 <li key={idx}>
-                    <button onClick={() => this.jumpTo(idx)}>{desc}</button>
+                    <button onClick={() => this.jumpTo(idx)}>
+                        {desc}
+                    </button>
                 </li>
             );
         });
@@ -86,7 +88,7 @@ class Game extends React.Component {
             <div className="game">
                 <div className="game-board">
                     <Board
-                        squares={current}
+                        squares={current.squares}
                         onClick={(i) => this.handleClick(i)}
                     />
                 </div>
@@ -99,7 +101,8 @@ class Game extends React.Component {
     }
 
     handleClick(i) {
-        const history = this.state.history;
+        // 历史记录有个默认的初始状态，因此总记录比步数多一
+        const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
 
@@ -115,6 +118,14 @@ class Game extends React.Component {
                 squares: squares,
             }]),
             xIsNext: !this.state.xIsNext,
+            stepNumber: this.state.stepNumber + 1,
+        });
+    }
+
+    jumpTo(idx) {
+        this.setState({
+            stepNumber: idx,
+            xIsNext: (idx % 2) === 0,  // 偶数步骤是 'X'，奇数步骤是 'O'。
         });
     }
 }
