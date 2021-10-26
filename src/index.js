@@ -2,48 +2,27 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 
-function Square(props) {
-    return (
-        <button
-            className="square"
-            onClick={() => props.onClick()}
-        >
-            {props.value}
-        </button>
-    );
-}
+function Board(props) {
+    // 生成三行三列 button 组件。
+    // `rows` & `cols` 不会有插入/删除/排序等改变元素顺序的操作，
+    // 因此可以用索引作为 key。
+    const rows = new Array(3).fill(0).map((_, row) => {
+        const cols = new Array(3).fill(0).map((_, col) => {
+            const idx = (3 * row) + col;
+            return (
+                <button
+                    key={idx}
+                    className="square"
+                    onClick={() => props.onClick(idx)}
+                >
+                    {props.squares[idx]}
+                </button>
+            );
+        });
+        return <div className="board-row" key={row}>{cols}</div>;
+    });
 
-class Board extends React.Component {
-    render() {
-        return (
-            <div>
-                <div className="board-row">
-                    {this.renderSquare(0)}
-                    {this.renderSquare(1)}
-                    {this.renderSquare(2)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(3)}
-                    {this.renderSquare(4)}
-                    {this.renderSquare(5)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(6)}
-                    {this.renderSquare(7)}
-                    {this.renderSquare(8)}
-                </div>
-            </div>
-        );
-    }
-
-    renderSquare(i) {
-        return (
-            <Square
-                value={this.props.squares[i]}
-                onClick={() => this.props.onClick(i)}
-            />
-        );
-    }
+    return <div>{rows}</div>;
 }
 
 class Game extends React.Component {
