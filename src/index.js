@@ -33,26 +33,32 @@ class Game extends React.Component {
                 squares: Array(9).fill(null),  // 这个数组代表初始棋盘，即全空状态。
             }],
             stepNumber: 0,
+            isAscending: true,
         };
+        this.orderMoves = this.orderMoves.bind(this);
+        this.jumpTo = this.jumpTo.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     render() {
         const squares = this.state.history[this.state.stepNumber].squares;
         const winner = calculateWinner(squares);
         const status = winner ? `Winner: ${winner}` : `Next player: ${this.getNextMarker()}`;
+        const orderDescription = this.state.isAscending ? "to descending" : "to ascending";
 
         // `this.state.history` 不会进行排序，只会在末尾插入，
         // 只会在末尾删除，不会改变现有元素的顺序，因此可以用索引作为 key。
-        const moves = this.state.history.map((_, idx) => {
+        let moves = this.state.history.map((_, idx) => {
             const desc = idx ? `Go to move #${idx}` : "Go to game start";
             return (
                 <li key={idx}>
-                    <button onClick={() => this.setState({stepNumber: idx})}>
+                    <button onClick={() => this.jumpTo(idx)}>
                         {desc}
                     </button>
                 </li>
             );
         });
+        moves = this.state.isAscending ? moves : moves.reverse();
 
         return (
             <div className="game">
@@ -64,10 +70,23 @@ class Game extends React.Component {
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
+                    <button onClick={this.orderMoves}>{orderDescription}</button>
                     <ol>{moves}</ol>
                 </div>
             </div>
         );
+    }
+
+    orderMoves() {
+        this.setState({
+            isAscending: !this.state.isAscending,
+        });
+    }
+
+    jumpTo(idx) {
+        this.setState({
+            stepNumber: idx,
+        });
     }
 
     handleClick(i) {
